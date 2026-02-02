@@ -1,0 +1,3 @@
+# GitHub Pages config
+# Include .well-known folder (normally hidden folders are excluded)
+include: [".well-known"]
