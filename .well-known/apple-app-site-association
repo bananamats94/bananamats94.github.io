@@ -1,0 +1,31 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": [
+          "4737WR3QKT.com.matthiassteins.Stashy"
+        ],
+        "components": [
+          {
+            "/": "/Stashy-legal/join/*",
+            "comment": "Team invite links"
+          },
+          {
+            "/": "/Stashy-legal/team/*",
+            "comment": "Team links"
+          },
+          {
+            "/": "/join/*",
+            "comment": "Short join links"
+          }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "4737WR3QKT.com.matthiassteins.Stashy"
+    ]
+  }
+}
