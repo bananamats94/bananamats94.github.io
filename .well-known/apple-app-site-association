@@ -20,12 +20,32 @@
             "comment": "Short join links"
           }
         ]
+      },
+      {
+        "appIDs": [
+          "4737WR3QKT.com.matthiassteins.LocaNote"
+        ],
+        "components": [
+          {
+            "/": "/app/task/*",
+            "comment": "Open a specific task"
+          },
+          {
+            "/": "/app/complete/*",
+            "comment": "Mark a task complete (widget fallback)"
+          },
+          {
+            "/": "/app/list/*",
+            "comment": "Join or view a shared list by code"
+          }
+        ]
       }
     ]
   },
   "webcredentials": {
     "apps": [
-      "4737WR3QKT.com.matthiassteins.Stashy"
+      "4737WR3QKT.com.matthiassteins.Stashy",
+      "4737WR3QKT.com.matthiassteins.LocaNote"
     ]
   }
 }
