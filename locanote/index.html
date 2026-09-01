@@ -1,563 +1,597 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>LocaNote — Aufgaben am richtigen Ort</title>
-<meta name="description" content="LocaNote erinnert dich an deine Aufgaben genau dann, wenn du am Ort ankommst. iPhone, iPad, Apple Watch. Privat. Apple-only.">
-<meta property="og:title" content="LocaNote — Aufgaben am richtigen Ort">
-<meta property="og:description" content="Ortsbasierte Erinnerungen, intelligente Routen, geteilte Listen mit Live-Sync. 9 Sprachen.">
-<meta property="og:image" content="https://locanote.codecraftcom.de/og-card.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LocaNote — Erledigungen in der richtigen Reihenfolge</title>
+<meta name="description" content="LocaNote sortiert deine Erledigungen nach echter Fahrzeit und Öffnungszeiten. Kein Konto, keine Server, keine Tracker.">
+<meta name="theme-color" content="#F4F2F7">
+
 <meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<meta property="og:title" content="LocaNote — Erledigungen in der richtigen Reihenfolge">
+<meta property="og:description" content="Der Bäcker schließt um 13:00. Deine To-do-App weiß das nicht.">
+<meta property="og:url" content="https://bananamats94.github.io/">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #15151d;
-    --text: #f3f3f5;
-    --text-2: #9596a0;
-    --text-3: #62636e;
-    --accent: #7c7cf5;
-    --accent-2: #6060d5;
-    --green: #34d399;
-    --orange: #f59e0b;
-    --red: #f87171;
-    --blue: #60a5fa;
-  }
-  * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    color: var(--text);
-    background: var(--bg);
-    line-height: 1.6;
-  }
+/* ─────────────────────────────────────────────────────────────
+   Tokens — alle Farben stammen aus der App selbst:
+   Violett = Color.locaNoteAccent, Bernstein = der Partner-Pin,
+   Papier = der Kartenton der Apple-Maps-Kacheln.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  --ink:        #16121F;
+  --ink-soft:   #6B6478;
+  --paper:      #F4F2F7;
+  --card:       #FFFFFF;
+  --violet:     #9E5CEB;
+  --violet-deep:#7352D9;
+  --amber:      #FA8529;
+  --rule:       #E2DEEA;
 
-  /* Nav */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-    background: rgba(10, 10, 15, 0.85);
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-  }
-  .nav-inner {
-    max-width: 1100px; margin: 0 auto;
-    padding: 14px 24px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .logo { font-weight: 800; font-size: 18px; letter-spacing: -0.3px; }
-  .logo-dot { color: var(--accent); }
-  .nav-cta {
-    background: var(--accent); color: white;
-    padding: 8px 18px; border-radius: 999px;
-    font-weight: 600; font-size: 13px;
-    text-decoration: none;
-    transition: transform 0.15s ease;
-  }
-  .nav-cta:hover { transform: translateY(-1px); }
+  --display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 
-  /* Hero */
-  .hero {
-    padding: 140px 24px 80px;
-    text-align: center;
-    background: radial-gradient(ellipse at top, rgba(124,124,245,0.18), transparent 60%);
-  }
-  .hero .eyebrow {
-    display: inline-block;
-    font-size: 12px; font-weight: 700;
-    letter-spacing: 2px; text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 18px;
-    padding: 6px 14px;
-    border: 1px solid rgba(124,124,245,0.3);
-    border-radius: 999px;
-    background: rgba(124,124,245,0.08);
-  }
-  .hero h1 {
-    font-size: clamp(40px, 7vw, 80px);
-    line-height: 1.05;
-    font-weight: 900;
-    letter-spacing: -0.03em;
-    max-width: 780px;
-    margin: 0 auto 22px;
-  }
-  .hero h1 em {
-    font-style: normal;
-    background: linear-gradient(135deg, var(--accent), #a17cf8);
-    -webkit-background-clip: text; background-clip: text;
-    color: transparent;
-  }
-  .hero .lede {
-    font-size: clamp(16px, 2vw, 21px);
-    color: var(--text-2);
-    max-width: 560px;
-    margin: 0 auto 36px;
-  }
-  .cta-group { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
-  .cta-primary, .cta-secondary {
-    padding: 14px 24px;
-    border-radius: 14px;
-    font-weight: 700;
-    font-size: 15px;
-    text-decoration: none;
-    transition: transform 0.15s ease;
-    display: inline-flex; align-items: center; gap: 10px;
-  }
-  .cta-primary {
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    color: white;
-    box-shadow: 0 12px 28px rgba(124,124,245,0.35);
-  }
-  .cta-secondary {
-    background: var(--surface);
-    color: var(--text);
-    border: 1px solid rgba(255,255,255,0.08);
-  }
-  .cta-primary:hover, .cta-secondary:hover { transform: translateY(-2px); }
+  --gap: clamp(4rem, 9vw, 7.5rem);
+}
 
-  /* Phone mockup */
-  .hero-phone {
-    margin: 60px auto 0;
-    width: 280px; height: 580px;
-    border-radius: 42px;
-    background: linear-gradient(180deg, #1a1a2e 0%, #0d0d14 100%);
-    box-shadow: 0 0 0 8px #1a1a22, 0 0 0 10px #2a2a35, 0 40px 80px rgba(0,0,0,0.6);
-    position: relative;
-    overflow: hidden;
-  }
-  .phone-notch {
-    position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
-    width: 90px; height: 26px; background: #000; border-radius: 14px; z-index: 10;
-  }
-  .phone-map {
-    position: absolute; inset: 0;
-    background: linear-gradient(180deg, #1a2a1a 0%, #0d1f0d 60%);
-    background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-    background-size: 30px 30px;
-  }
-  .pin {
-    position: absolute;
-    width: 28px; height: 28px;
-    border-radius: 50% 50% 50% 0;
-    transform: rotate(-45deg);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .pin span {
-    transform: rotate(45deg);
-    font-size: 11px; font-weight: 800; color: white;
-  }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* Section base */
-  section {
-    padding: 100px 24px;
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-  .section-label {
-    display: block;
-    text-align: center;
-    font-size: 12px; font-weight: 700;
-    letter-spacing: 2px; text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 14px;
-  }
-  h2 {
-    font-size: clamp(32px, 4vw, 54px);
-    line-height: 1.1;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    text-align: center;
-    margin-bottom: 18px;
-  }
-  .section-lede {
-    text-align: center;
-    font-size: 17px;
-    color: var(--text-2);
-    max-width: 580px;
-    margin: 0 auto 60px;
-  }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
-  /* Feature grid */
-  .features {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-  }
-  .feature {
-    padding: 28px;
-    background: var(--surface);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 18px;
-  }
-  .feature-icon {
-    width: 48px; height: 48px;
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
-    margin-bottom: 18px;
-  }
-  .feature h3 {
-    font-size: 19px;
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
-  .feature p {
-    color: var(--text-2);
-    font-size: 15px;
-  }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 17px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
 
-  /* Privacy strip */
-  .privacy {
-    background: linear-gradient(135deg, rgba(52,211,153,0.08), rgba(52,211,153,0.02));
-    border: 1px solid rgba(52,211,153,0.15);
-    padding: 40px;
-    border-radius: 20px;
-    text-align: center;
-    max-width: 760px;
-    margin: 0 auto;
-  }
-  .privacy-icon {
-    width: 60px; height: 60px;
-    margin: 0 auto 18px;
-    border-radius: 16px;
-    background: linear-gradient(135deg, var(--green), #10b981);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 28px;
-    box-shadow: 0 12px 28px rgba(52,211,153,0.25);
-  }
-  .privacy h3 {
-    font-size: 26px;
-    font-weight: 800;
-    margin-bottom: 10px;
-  }
-  .privacy-list {
-    display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;
-    margin-top: 20px;
-  }
-  .privacy-item {
-    display: flex; align-items: center; gap: 6px;
-    color: var(--green);
-    font-weight: 600;
-    font-size: 14px;
-  }
+.wrap { width: min(1080px, 100% - 2.5rem); margin-inline: auto; }
 
-  /* Pricing */
-  .pricing-card {
-    background: var(--surface);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 20px;
-    padding: 36px;
-    max-width: 440px;
-    margin: 0 auto;
-    text-align: center;
-  }
-  .price {
-    font-size: 56px; font-weight: 900;
-    letter-spacing: -0.03em;
-    color: var(--accent);
-    margin: 8px 0;
-    font-variant-numeric: tabular-nums;
-  }
-  .price-period { color: var(--text-2); font-size: 14px; }
-  .price-list {
-    text-align: left;
-    margin-top: 28px;
-  }
-  .price-list li {
-    list-style: none;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    display: flex; align-items: center; gap: 12px;
-    color: var(--text-2);
-  }
-  .price-list li::before {
-    content: '✓';
-    color: var(--green);
-    font-weight: 800;
-  }
-  .price-list li:last-child { border-bottom: none; }
+/* Zweisprachigkeit: genau ein Sprachzweig ist sichtbar. */
+[data-de], [data-en] { display: none; }
+html[data-lang="de"] [data-de] { display: revert; }
+html[data-lang="en"] [data-en] { display: revert; }
 
-  /* Footer */
-  footer {
-    padding: 60px 24px;
-    text-align: center;
-    border-top: 1px solid rgba(255,255,255,0.06);
-    color: var(--text-3);
-    font-size: 13px;
-  }
-  footer a { color: var(--text-2); text-decoration: none; }
-  footer a:hover { color: var(--text); }
-  .foot-links { display: flex; justify-content: center; gap: 22px; margin-bottom: 18px; }
+/* ── Kopfzeile ─────────────────────────────────────────────── */
+.top {
+  position: sticky; top: 0; z-index: 20;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--rule);
+}
+.top-in {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-block: 0.9rem;
+}
+.brand {
+  display: flex; align-items: center; gap: 0.55rem;
+  font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em;
+}
+.brand .pin {
+  width: 22px; height: 22px; border-radius: 7px;
+  background: linear-gradient(135deg, var(--violet-deep), var(--violet));
+  position: relative; flex: none;
+}
+.brand .pin::after {
+  content: ""; position: absolute; inset: 6px 6px auto auto;
+  width: 8px; height: 8px; border-radius: 50%; background: #fff;
+}
+.langs { display: flex; gap: 0.15rem; font-family: var(--mono); font-size: 0.72rem; }
+.langs button {
+  border: 0; background: none; cursor: pointer; padding: 0.3rem 0.5rem;
+  color: var(--ink-soft); border-radius: 6px; font: inherit; letter-spacing: 0.06em;
+}
+.langs button[aria-pressed="true"] { color: var(--ink); background: var(--rule); }
+.langs button:focus-visible, a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--violet); outline-offset: 2px;
+}
 
-  /* Bilingual toggle — DE default, EN swaps via [lang=en] attribute */
-  .lang-switch {
-    display: inline-flex; margin-left: 12px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 999px; padding: 3px;
-  }
-  .lang-switch button {
-    background: none; border: none; color: var(--text-2);
-    font: inherit; font-weight: 600; font-size: 12px;
-    padding: 4px 10px; border-radius: 999px; cursor: pointer;
-  }
-  .lang-switch button.active { background: var(--accent); color: white; }
-  .de { display: inline; }
-  .en { display: none; }
-  [lang="en"] .de { display: none; }
-  [lang="en"] .en { display: inline; }
+/* ── Hero ──────────────────────────────────────────────────── */
+.hero { padding-block: clamp(2.25rem, 4.5vw, 3.5rem) 0; }
 
-  @media (max-width: 640px) {
-    .hero { padding: 110px 18px 60px; }
-    section { padding: 70px 18px; }
-  }
+.eyebrow {
+  font-family: var(--mono); font-size: 0.72rem; font-weight: 500;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-soft);
+  display: block; margin-bottom: 1.1rem;
+}
+
+h1 {
+  font-size: clamp(2.1rem, 4.6vw, 3.35rem);
+  font-weight: 800;
+  font-stretch: 112%;
+  line-height: 1.04;
+  letter-spacing: -0.032em;
+  max-width: 19ch;
+  text-wrap: balance;
+}
+h1 em { font-style: normal; color: var(--violet-deep); }
+
+.lede {
+  margin-top: 1.15rem; max-width: 46ch;
+  font-size: clamp(1.05rem, 1.9vw, 1.3rem); color: var(--ink-soft);
+  text-wrap: pretty;
+}
+
+/* ── Signatur: der Fahrplan, der sich selbst umsortiert ────── */
+.board {
+  margin-top: clamp(1.75rem, 3.2vw, 2.4rem);
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px -32px rgba(22,18,31,.35);
+  max-width: 640px;
+}
+.board-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+  padding: 1rem 1.35rem; border-bottom: 1px solid var(--rule);
+  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--ink-soft);
+}
+.board-head strong { color: var(--ink); font-weight: 600; }
+.board-state { transition: opacity .3s; }
+
+.rows { list-style: none; padding: 0.4rem 0; }
+.row {
+  display: grid;
+  grid-template-columns: 4.6rem 1fr auto;
+  align-items: center; gap: 0.9rem;
+  padding: 0.72rem 1.35rem;
+  will-change: transform;
+}
+.row .t {
+  font-family: var(--mono); font-size: 0.92rem; font-weight: 500;
+  font-variant-numeric: tabular-nums; color: var(--ink-soft);
+  transition: color .35s;
+}
+.row .n { font-weight: 600; letter-spacing: -0.01em; }
+.row .flag {
+  font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.04em;
+  padding: 0.22rem 0.5rem; border-radius: 999px; white-space: nowrap;
+  background: color-mix(in srgb, var(--amber) 16%, transparent);
+  color: #9A4E10;
+  transition: opacity .35s, background .35s, color .35s;
+}
+.row.is-anchor .t { color: var(--amber); font-weight: 600; }
+.row.resolved .flag {
+  background: color-mix(in srgb, #1E9E5A 14%, transparent); color: #12703F;
+}
+
+.board-foot {
+  border-top: 1px solid var(--rule); padding: 0.9rem 1.35rem;
+  font-family: var(--mono); font-size: 0.74rem; color: var(--ink-soft);
+  display: flex; gap: 0.9rem; flex-wrap: wrap;
+}
+.board-foot > span + span::before { content: "·"; margin-right: 0.9rem; opacity: .55; }
+
+/* ── Warteliste ────────────────────────────────────────────── */
+.signup { margin-top: clamp(1.75rem, 3.2vw, 2.4rem); max-width: 520px; }
+.signup form { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.signup input[type="email"] {
+  flex: 1 1 15rem; min-width: 0;
+  padding: 0.95rem 1.1rem; font: inherit; font-size: 1rem;
+  border: 1px solid var(--rule); border-radius: 12px;
+  background: var(--card); color: var(--ink);
+}
+.signup input::placeholder { color: color-mix(in srgb, var(--ink-soft) 75%, transparent); }
+.btn {
+  border: 0; cursor: pointer; font: inherit; font-weight: 700; font-size: 1rem;
+  padding: 0.95rem 1.5rem; border-radius: 12px; color: #fff;
+  background: linear-gradient(135deg, var(--violet-deep), var(--violet));
+  box-shadow: 0 10px 24px -12px var(--violet-deep);
+  transition: transform .15s, box-shadow .15s;
+}
+.btn:hover { transform: translateY(-1px); box-shadow: 0 14px 30px -12px var(--violet-deep); }
+.btn:active { transform: translateY(0); }
+.fineprint {
+  margin-top: 0.85rem; font-family: var(--mono);
+  font-size: 0.74rem; color: var(--ink-soft); letter-spacing: 0.02em;
+}
+.formnote { margin-top: 0.85rem; font-size: 0.95rem; font-weight: 600; }
+.formnote:empty { margin: 0; }
+
+/* ── Abschnitte ────────────────────────────────────────────── */
+section + section { padding-top: var(--gap); }
+.sect-label {
+  font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--ink-soft);
+  padding-bottom: 1.6rem; border-bottom: 1px solid var(--rule); display: block;
+}
+h2 {
+  font-size: clamp(1.75rem, 3.6vw, 2.5rem); font-weight: 700;
+  font-stretch: 108%; letter-spacing: -0.03em; line-height: 1.1;
+  max-width: 20ch; margin-top: 2.2rem;
+}
+
+.points { list-style: none; margin-top: 2.5rem; }
+.points li {
+  display: grid; grid-template-columns: 3.2rem 1fr;
+  gap: 0 1.4rem; padding-block: 1.7rem; border-top: 1px solid var(--rule);
+  align-items: start;
+}
+.points li:first-child { border-top: 0; padding-top: 0; }
+.points .k {
+  font-family: var(--mono); font-size: 0.74rem; color: var(--violet-deep);
+  letter-spacing: 0.08em; padding-top: 0.35rem;
+}
+.points h3 { font-size: 1.18rem; font-weight: 700; letter-spacing: -0.015em; }
+.points p { color: var(--ink-soft); max-width: 56ch; margin-top: 0.4rem; }
+
+.quiet {
+  margin-top: 2.4rem; padding: clamp(1.6rem, 3.5vw, 2.4rem);
+  border: 1px solid var(--rule); border-radius: 20px; background: var(--card);
+}
+.quiet ul { list-style: none; margin-top: 1.2rem; display: grid; gap: 0.75rem; }
+.quiet li {
+  font-family: var(--mono); font-size: 0.88rem; color: var(--ink);
+  display: flex; gap: 0.7rem; align-items: baseline;
+}
+.quiet li::before { content: "—"; color: var(--violet); }
+.quiet .foot { margin-top: 1.4rem; font-size: 0.92rem; color: var(--ink-soft); }
+
+/* ── Fuß ───────────────────────────────────────────────────── */
+footer {
+  margin-top: var(--gap); border-top: 1px solid var(--rule);
+  padding-block: 2.4rem 3.5rem;
+  font-family: var(--mono); font-size: 0.78rem; color: var(--ink-soft);
+}
+footer .fl { display: flex; flex-wrap: wrap; gap: 0.6rem 1.4rem; align-items: center; }
+footer a { color: var(--ink-soft); text-decoration: none; border-bottom: 1px solid var(--rule); }
+footer a:hover { color: var(--ink); border-color: var(--violet); }
+footer .copy { margin-top: 1.2rem; }
+
+@media (max-width: 620px) {
+  .row { grid-template-columns: 4rem 1fr; }
+  .row .flag { grid-column: 2; justify-self: start; margin-top: 0.3rem; }
+  .points li { grid-template-columns: 1fr; gap: 0.5rem; }
+  .points .k { padding-top: 0; }
+}
 </style>
 </head>
 <body>
 
-<nav>
-  <div class="nav-inner">
-    <span class="logo">LocaNote<span class="logo-dot">.</span></span>
-    <div style="display:flex; align-items:center;">
-      <div class="lang-switch" role="group" aria-label="Language">
-        <button type="button" data-lang="de" class="active">DE</button>
-        <button type="button" data-lang="en">EN</button>
+<header class="top">
+  <div class="wrap top-in">
+    <div class="brand"><span class="pin" aria-hidden="true"></span>LocaNote</div>
+    <div class="langs" role="group" aria-label="Sprache / Language">
+      <button type="button" data-set-lang="de" aria-pressed="true">DE</button>
+      <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <span class="eyebrow">
+      <span data-de>Samstag · 4 Stopps · 1 Problem</span>
+      <span data-en>Saturday · 4 stops · 1 problem</span>
+    </span>
+
+    <h1>
+      <span data-de>Der Bäcker schließt um 13:00. <em>Deine To-do-App weiß das nicht.</em></span>
+      <span data-en>The bakery closes at 1 PM. <em>Your to-do app has no idea.</em></span>
+    </h1>
+
+    <p class="lede">
+      <span data-de>LocaNote sortiert deine Erledigungen nach echter Fahrzeit <strong>und</strong> Öffnungszeiten. Du fährst los, ohne vorher zu rechnen.</span>
+      <span data-en>LocaNote orders your errands by real travel time <strong>and</strong> opening hours. You just leave the house.</span>
+    </p>
+
+    <!-- Signatur der Seite: derselbe Fahrplan, zweimal. Erst wie eingegeben,
+         dann so, wie LocaNote ihn sortiert. Der Sprung ist die Botschaft. -->
+    <div class="board" id="board">
+      <div class="board-head">
+        <span class="board-state" id="boardState">
+          <span data-de>Reihenfolge wie eingegeben</span>
+          <span data-en>Your order, as entered</span>
+        </span>
+        <strong id="boardMeta">4,1 km · 47 min</strong>
       </div>
-      <a href="#download" class="nav-cta" style="margin-left:12px;">
-        <span class="de">Laden</span><span class="en">Download</span>
-      </a>
+
+      <ul class="rows" id="rows">
+        <li class="row" data-key="baumarkt">
+          <span class="t">11:40</span>
+          <span class="n">Baumarkt</span>
+        </li>
+        <li class="row" data-key="rewe">
+          <span class="t">12:20</span>
+          <span class="n">REWE</span>
+        </li>
+        <li class="row is-anchor" data-key="baecker">
+          <span class="t">13:10</span>
+          <span class="n"><span data-de>Bäckerei Müller</span><span data-en>Miller's Bakery</span></span>
+          <span class="flag" id="flag">
+            <span data-de>schließt 13:00</span>
+            <span data-en>closes 1 PM</span>
+          </span>
+        </li>
+        <li class="row" data-key="post">
+          <span class="t">13:45</span>
+          <span class="n"><span data-de>Post</span><span data-en>Post office</span></span>
+        </li>
+      </ul>
+
+      <div class="board-foot">
+        <span data-de>Termine bleiben feste Anker</span>
+        <span data-en>Appointments stay fixed anchors</span>
+        <span data-de>Ein Tap an Apple Karten</span>
+        <span data-en>One tap to Apple Maps</span>
+      </div>
     </div>
-  </div>
-</nav>
 
-<!-- Hero -->
-<section class="hero" style="padding-top: 140px;">
-  <span class="eyebrow">
-    <span class="de">Neu · iPhone · iPad · Watch</span>
-    <span class="en">New · iPhone · iPad · Watch</span>
-  </span>
-  <h1>
-    <span class="de">Aufgaben.<br>Am <em>richtigen Ort</em>.</span>
-    <span class="en">Tasks.<br>Where they <em>actually matter</em>.</span>
-  </h1>
-  <p class="lede">
-    <span class="de">Dein Einkaufszettel auf dem Sofa bringt dir nichts. LocaNote meldet sich, sobald du am Laden ankommst — und hält sich sonst raus.</span>
-    <span class="en">A shopping list on the couch helps nobody. LocaNote pings you at the store and stays quiet the rest of the time.</span>
-  </p>
-  <div class="cta-group">
-    <a href="#download" class="cta-primary">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-      App Store
-    </a>
-    <a href="#features" class="cta-secondary">
-      <span class="de">Was drin ist</span><span class="en">What's inside</span>
-    </a>
-  </div>
-
-  <div class="hero-phone">
-    <div class="phone-notch"></div>
-    <div class="phone-map">
-      <div class="pin" style="left: 35%; top: 30%; background: var(--blue);"><span>2</span></div>
-      <div class="pin" style="left: 60%; top: 40%; background: var(--green);"><span>1</span></div>
-      <div class="pin" style="left: 45%; top: 55%; background: var(--orange);"><span>3</span></div>
+    <div class="signup">
+      <!-- Warteliste: FORM-ID eintragen, siehe README.md im selben Ordner. -->
+      <form id="waitlist" action="https://formspree.io/f/DEINE_FORM_ID" method="POST">
+        <label class="visually-hidden" for="email" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">
+          <span data-de>E-Mail-Adresse</span><span data-en>Email address</span>
+        </label>
+        <input id="email" type="email" name="email" required
+               data-ph-de="deine@mail.de" data-ph-en="you@example.com">
+        <button class="btn" type="submit">
+          <span data-de>Sag mir Bescheid</span>
+          <span data-en>Tell me when it's out</span>
+        </button>
+      </form>
+      <p class="fineprint">
+        <span data-de>Eine Mail zum Start. Sonst nichts. Jederzeit abbestellbar.</span>
+        <span data-en>One email at launch. Nothing else. Unsubscribe anytime.</span>
+      </p>
+      <p class="formnote" id="formnote" role="status" aria-live="polite"></p>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Features -->
-<section id="features">
-  <span class="section-label">
-    <span class="de">Features</span><span class="en">Features</span>
-  </span>
-  <h2>
-    <span class="de">Klein. Präzise.<br>Manchmal magisch.</span>
-    <span class="en">Small. Precise.<br>Sometimes magical.</span>
-  </h2>
-  <p class="section-lede">
-    <span class="de">Sechs Dinge, die LocaNote zu mehr machen als noch eine To-Do-App.</span>
-    <span class="en">Six things that make LocaNote more than another to-do app.</span>
-  </p>
+  <section class="wrap">
+    <span class="sect-label">
+      <span data-de>Warum es das braucht</span>
+      <span data-en>Why this exists</span>
+    </span>
+    <h2>
+      <span data-de>Drei Dinge, die deine Erinnerungs-App nicht tut.</span>
+      <span data-en>Three things your reminders app doesn't do.</span>
+    </h2>
 
-  <div class="features">
-    <div class="feature">
-      <div class="feature-icon" style="background: rgba(96,165,250,0.15); color: var(--blue);">📍</div>
-      <h3>
-        <span class="de">Erinnerung am Ort</span>
-        <span class="en">Arrival reminders</span>
-      </h3>
-      <p>
-        <span class="de">Die Meldung kommt, wenn du ankommst. Nicht vorher, nicht später.</span>
-        <span class="en">The notification fires when you arrive. Not before, not after.</span>
+    <ol class="points">
+      <li>
+        <span class="k">01</span>
+        <div>
+          <h3><span data-de>Reihenfolge mit Öffnungszeiten</span><span data-en>Order that respects closing time</span></h3>
+          <p>
+            <span data-de>Vier Stopps haben 24 mögliche Reihenfolgen. Nur wenige davon erwischen den Bäcker vor 13:00. LocaNote rechnet mit echten Straßenentfernungen und behandelt Termine als feste Anker.</span>
+            <span data-en>Four stops have 24 possible orders. Only a few of them reach the bakery before it shuts. LocaNote uses real road distances and treats appointments as fixed anchors.</span>
+          </p>
+        </div>
+      </li>
+      <li>
+        <span class="k">02</span>
+        <div>
+          <h3><span data-de>Erinnerung genau am Ort</span><span data-en>A reminder at the door</span></h3>
+          <p>
+            <span data-de>Die Meldung kommt, wenn du ankommst — nicht um 9 Uhr morgens, wenn du nichts damit anfangen kannst. iOS überwacht maximal 20 Orte gleichzeitig; LocaNote entscheidet laufend, welche 20 gerade die richtigen sind.</span>
+            <span data-en>The notification fires when you arrive — not at 9 a.m. when you can't act on it. iOS monitors 20 places at most; LocaNote keeps deciding which 20 currently matter.</span>
+          </p>
+        </div>
+      </li>
+      <li>
+        <span class="k">03</span>
+        <div>
+          <h3><span data-de>Listen, die zu zweit funktionieren</span><span data-en>Lists that work for two</span></h3>
+          <p>
+            <span data-de>Teile eine Liste, und du siehst, wenn jemand am Supermarkt ankommt — rechtzeitig, um noch etwas draufzuschreiben. Geteilt wird der Ortsname, nie deine Koordinaten.</span>
+            <span data-en>Share a list and you see when someone arrives at the store — in time to add one more thing. What's shared is the place name, never your coordinates.</span>
+          </p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="wrap">
+    <span class="sect-label">
+      <span data-de>Was LocaNote über dich weiß</span>
+      <span data-en>What LocaNote knows about you</span>
+    </span>
+    <h2>
+      <span data-de>Nichts. Und das ist keine Formulierung.</span>
+      <span data-en>Nothing. And that's not a figure of speech.</span>
+    </h2>
+
+    <div class="quiet">
+      <ul>
+        <li><span data-de>Kein Konto, keine Anmeldung</span><span data-en>No account, no sign-up</span></li>
+        <li><span data-de>Keine Server — Sync läuft über deine eigene iCloud</span><span data-en>No servers — sync runs through your own iCloud</span></li>
+        <li><span data-de>Kein Analytics-SDK, keine Werbe-Tracker</span><span data-en>No analytics SDK, no ad trackers</span></li>
+        <li><span data-de>Textanalyse läuft auf dem Gerät, nicht in der Cloud</span><span data-en>Text parsing runs on device, not in the cloud</span></li>
+      </ul>
+      <p class="foot">
+        <span data-de>Eine App, die deine Wege kennt, sollte sie niemandem erzählen. Deshalb gibt es kein Backend, dem man vertrauen müsste.</span>
+        <span data-en>An app that knows where you go shouldn't tell anyone. So there's no backend you'd have to trust.</span>
       </p>
     </div>
-    <div class="feature">
-      <div class="feature-icon" style="background: rgba(245,158,11,0.15); color: var(--orange);">🗺️</div>
-      <h3>
-        <span class="de">Smart Routes <small style="opacity:0.5">Pro</small></span>
-        <span class="en">Smart Routes <small style="opacity:0.5">Pro</small></span>
-      </h3>
-      <p>
-        <span class="de">Mehrere Stopps, sinnvoll sortiert. Ein Tap übergibt an Apple Maps.</span>
-        <span class="en">Multiple stops in a smart order. One tap hands off to Apple Maps.</span>
-      </p>
-    </div>
-    <div class="feature">
-      <div class="feature-icon" style="background: rgba(167,139,250,0.15); color: #a78bfa;">👥</div>
-      <h3>
-        <span class="de">Geteilte Listen</span>
-        <span class="en">Shared lists</span>
-      </h3>
-      <p>
-        <span class="de">Familie, WG, Team. Du siehst live, wer gerade beim Einkauf ist.</span>
-        <span class="en">Family, roommates, team. You see in real time who's at the store.</span>
-      </p>
-    </div>
-    <div class="feature">
-      <div class="feature-icon" style="background: rgba(52,211,153,0.15); color: var(--green);">🎯</div>
-      <h3>
-        <span class="de">Gewohnheiten</span>
-        <span class="en">Place goals</span>
-      </h3>
-      <p>
-        <span class="de">„20× ins Fitnessstudio." LocaNote zählt jeden Besuch automatisch.</span>
-        <span class="en">"20× to the gym." LocaNote counts each visit automatically.</span>
-      </p>
-    </div>
-    <div class="feature">
-      <div class="feature-icon" style="background: rgba(248,113,113,0.15); color: var(--red);">🔥</div>
-      <h3>
-        <span class="de">Heat Map <small style="opacity:0.5">Pro</small></span>
-        <span class="en">Heat Map <small style="opacity:0.5">Pro</small></span>
-      </h3>
-      <p>
-        <span class="de">Wo verbringst du deine Zeit wirklich? Die Karte weiß es ehrlicher als du.</span>
-        <span class="en">Where do you actually spend your time? The map knows — more honestly than you do.</span>
-      </p>
-    </div>
-    <div class="feature">
-      <div class="feature-icon" style="background: rgba(251,191,36,0.15); color: #fbbf24;">☀️</div>
-      <h3>
-        <span class="de">Wetter-Gespür <small style="opacity:0.5">Pro</small></span>
-        <span class="en">Weather sense <small style="opacity:0.5">Pro</small></span>
-      </h3>
-      <p>
-        <span class="de">Regen? Indoor-Aufgaben rücken nach oben. Sonne? Park-Pin glüht.</span>
-        <span class="en">Raining? Indoor tasks rise to the top. Sunny? The park pin glows.</span>
-      </p>
-    </div>
-  </div>
-</section>
+  </section>
 
-<!-- Privacy -->
-<section>
-  <span class="section-label">
-    <span class="de">Datenschutz</span><span class="en">Privacy</span>
-  </span>
-  <h2>
-    <span class="de">Deine Daten bleiben <em style="color: var(--green); font-style: normal;">bei dir</em>.</span>
-    <span class="en">Your data stays <em style="color: var(--green); font-style: normal;">with you</em>.</span>
-  </h2>
-  <p class="section-lede">
-    <span class="de">Apple-first gebaut. Wir sehen nichts — mit Absicht.</span>
-    <span class="en">Built Apple-first. We see nothing — on purpose.</span>
-  </p>
-
-  <div class="privacy">
-    <div class="privacy-icon">🔒</div>
-    <h3>
-      <span class="de">Keine Server. Keine Tracker.</span>
-      <span class="en">No servers. No trackers.</span>
-    </h3>
-    <p style="color: var(--text-2); max-width: 500px; margin: 0 auto;">
-      <span class="de">Alles liegt in deiner iCloud. Standort bleibt am Gerät. Wetter kommt von Apples WeatherKit — ohne persönliche Kennung.</span>
-      <span class="en">Everything lives in your iCloud. Location stays on-device. Weather comes from Apple's WeatherKit — no personal identifier.</span>
+  <section class="wrap">
+    <span class="sect-label">
+      <span data-de>Start</span>
+      <span data-en>Launch</span>
+    </span>
+    <h2>
+      <span data-de>Bald im App Store. Für iPhone.</span>
+      <span data-en>Coming to the App Store. For iPhone.</span>
+    </h2>
+    <p class="lede">
+      <span data-de>Kostenlos starten — Karte, Orte, Erinnerungen und eine geteilte Liste sind dauerhaft frei. Die Routenplanung gibt es als Pro.</span>
+      <span data-en>Free to start — map, places, reminders and one shared list stay free. Route planning is the Pro part.</span>
     </p>
-    <div class="privacy-list">
-      <span class="privacy-item"><span class="de">✓ Keine Werbung</span><span class="en">✓ No ads</span></span>
-      <span class="privacy-item"><span class="de">✓ Kein Fremd-Analytics</span><span class="en">✓ No third-party analytics</span></span>
-      <span class="privacy-item"><span class="de">✓ Kein Account-Zwang</span><span class="en">✓ No account required</span></span>
+    <div class="signup">
+      <form id="waitlist2" action="https://formspree.io/f/DEINE_FORM_ID" method="POST">
+        <label style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)" for="email2">
+          <span data-de>E-Mail-Adresse</span><span data-en>Email address</span>
+        </label>
+        <input id="email2" type="email" name="email" required
+               data-ph-de="deine@mail.de" data-ph-en="you@example.com">
+        <button class="btn" type="submit">
+          <span data-de>Sag mir Bescheid</span>
+          <span data-en>Tell me when it's out</span>
+        </button>
+      </form>
+      <p class="formnote" id="formnote2" role="status" aria-live="polite"></p>
     </div>
-  </div>
-</section>
+  </section>
+</main>
 
-<!-- Pricing -->
-<section id="download">
-  <span class="section-label">
-    <span class="de">Preise</span><span class="en">Pricing</span>
-  </span>
-  <h2>
-    <span class="de">Fair. Klar. Ohne Abo-Falle.</span>
-    <span class="en">Fair. Plain. No subscription traps.</span>
-  </h2>
-  <p class="section-lede">
-    <span class="de">7 Tage probieren. Dann entscheiden.</span>
-    <span class="en">Try it for 7 days. Then decide.</span>
-  </p>
-
-  <div class="pricing-card">
-    <div style="font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--accent);">LocaNote Pro</div>
-    <div class="price">€24,99</div>
-    <div class="price-period">
-      <span class="de">pro Jahr · ca. 2,08 €/Monat</span>
-      <span class="en">per year · about €2.08/month</span>
-    </div>
-    <ul class="price-list">
-      <li><span class="de">Unbegrenzt Listen, Orte, Ziele</span><span class="en">Unlimited lists, places, goals</span></li>
-      <li><span class="de">Smart Routes und Heat Map</span><span class="en">Smart Routes and Heat Map</span></li>
-      <li><span class="de">Wetter-Gespür und Insights</span><span class="en">Weather sense and Insights</span></li>
-      <li><span class="de">5 Partner gratis dabei</span><span class="en">5 partners included for free</span></li>
-      <li><span class="de">Premium-Themes</span><span class="en">Premium themes</span></li>
-    </ul>
-    <a href="https://apps.apple.com/app/locanote" class="cta-primary" style="margin-top: 28px; width: 100%; justify-content: center;">
-      <span class="de">Im App Store laden</span><span class="en">Get it on App Store</span>
-    </a>
-    <p style="font-size: 12px; color: var(--text-3); margin-top: 12px;">
-      <span class="de">Auch als Monats-Abo, Familie oder einmalig Lifetime.<br>Jederzeit kündbar.</span>
-      <span class="en">Also as monthly, family, or one-time Lifetime.<br>Cancel anytime.</span>
-    </p>
+<footer class="wrap">
+  <div class="fl">
+    <a href="https://bananamats94.github.io/locanote-legal/privacy.html"><span data-de>Datenschutz</span><span data-en>Privacy</span></a>
+    <a href="https://bananamats94.github.io/locanote-legal/terms.html"><span data-de>Nutzungsbedingungen</span><span data-en>Terms</span></a>
+    <a href="https://bananamats94.github.io/locanote-legal/imprint.html"><span data-de>Impressum</span><span data-en>Imprint</span></a>
+    <a href="mailto:support@codecraftcom.de">support@codecraftcom.de</a>
   </div>
-</section>
-
-<!-- Footer -->
-<footer>
-  <div class="foot-links">
-    <a href="https://bananamats94.github.io/locanote-legal/privacy.html">
-      <span class="de">Datenschutz</span><span class="en">Privacy</span>
-    </a>
-    <a href="https://bananamats94.github.io/locanote-legal/terms.html">
-      <span class="de">AGB</span><span class="en">Terms</span>
-    </a>
-    <a href="https://bananamats94.github.io/locanote-legal/imprint.html">
-      <span class="de">Impressum</span><span class="en">Imprint</span>
-    </a>
-    <a href="mailto:support@codecraftcom.de">Support</a>
-  </div>
-  <p>© 2026 CodeCraft · Matthias Steins</p>
+  <p class="copy">© 2026 CodeCraft · Matthias Steins</p>
 </footer>
 
 <script>
-  (function () {
-    const stored = localStorage.getItem('locanote-lang');
-    const browserIsEnglish = (navigator.language || '').toLowerCase().startsWith('en');
-    const lang = stored || (browserIsEnglish ? 'en' : 'de');
-    apply(lang);
-    document.querySelectorAll('.lang-switch button').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        apply(btn.dataset.lang);
-        localStorage.setItem('locanote-lang', btn.dataset.lang);
+(function () {
+  "use strict";
+
+  /* ── Sprache ───────────────────────────────────────────── */
+  var root = document.documentElement;
+  function setLang(code) {
+    root.setAttribute("lang", code);
+    root.setAttribute("data-lang", code);
+    document.querySelectorAll("[data-set-lang]").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.setLang === code));
+    });
+    document.querySelectorAll("input[data-ph-de]").forEach(function (i) {
+      i.placeholder = code === "en" ? i.dataset.phEn : i.dataset.phDe;
+    });
+    try { localStorage.setItem("locanote.lang", code); } catch (e) {}
+  }
+  document.querySelectorAll("[data-set-lang]").forEach(function (b) {
+    b.addEventListener("click", function () { setLang(b.dataset.setLang); });
+  });
+  var saved = null;
+  try { saved = localStorage.getItem("locanote.lang"); } catch (e) {}
+  var browserIsGerman = (navigator.language || "de").toLowerCase().indexOf("de") === 0;
+  setLang(saved || (browserIsGerman ? "de" : "en"));
+
+  /* ── Der Fahrplan sortiert sich um ─────────────────────────
+     FLIP: alte Position messen, umsortieren, neue Position
+     messen, Differenz als Transform setzen und weganimieren.
+     Ohne das springen die Zeilen einfach. */
+  var rows = document.getElementById("rows");
+  var state = document.getElementById("boardState");
+  var meta = document.getElementById("boardMeta");
+  var flag = document.getElementById("flag");
+
+  var SORTED = ["baecker", "baumarkt", "rewe", "post"];
+  var TIMES = { baecker: "11:40", baumarkt: "12:15", rewe: "12:50", post: "13:30" };
+
+  function applySorted(animate) {
+    var items = Array.prototype.slice.call(rows.children);
+    var first = {};
+    items.forEach(function (el) { first[el.dataset.key] = el.getBoundingClientRect().top; });
+
+    SORTED.forEach(function (key) {
+      var el = items.filter(function (e) { return e.dataset.key === key; })[0];
+      if (el) rows.appendChild(el);
+    });
+    items.forEach(function (el) {
+      el.querySelector(".t").textContent = TIMES[el.dataset.key];
+    });
+
+    state.innerHTML = '<span data-de>Von LocaNote sortiert</span><span data-en>Sorted by LocaNote</span>';
+    meta.textContent = "4,1 km · 47 min";
+    flag.closest(".row").classList.add("resolved");
+    flag.innerHTML = '<span data-de>vor 13:00 geschafft</span><span data-en>made it before 1 PM</span>';
+
+    if (!animate) return;
+    items.forEach(function (el) {
+      var delta = first[el.dataset.key] - el.getBoundingClientRect().top;
+      if (!delta) return;
+      el.animate(
+        [{ transform: "translateY(" + delta + "px)" }, { transform: "none" }],
+        { duration: 620, easing: "cubic-bezier(.22,1,.36,1)" }
+      );
+    });
+  }
+
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduced) {
+    applySorted(false);
+  } else if ("IntersectionObserver" in window) {
+    var seen = false;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting && !seen) {
+          seen = true;
+          setTimeout(function () { applySorted(true); }, 1100);
+          io.disconnect();
+        }
+      });
+    }, { threshold: 0.45 });
+    io.observe(document.getElementById("board"));
+  } else {
+    setTimeout(function () { applySorted(true); }, 1100);
+  }
+
+  /* ── Warteliste ohne Seitenwechsel ─────────────────────── */
+  function wire(formId, noteId) {
+    var form = document.getElementById(formId);
+    var note = document.getElementById(noteId);
+    if (!form) return;
+    // Solange keine Form-ID eingetragen ist, das Formular gar nicht erst
+    // anbieten. Vorher lief der Absenden-Knopf in einen ganz normalen POST
+    // auf formspree.io/f/DEINE_FORM_ID — der Besucher landete auf einer
+    // 404-Seite. Ein Hinweis ist besser als eine Fehlerseite.
+    if (form.action.indexOf("DEINE_FORM_ID") !== -1) {
+      var de = document.documentElement.lang !== "en";
+      var hint = document.createElement("p");
+      hint.className = "note";
+      hint.textContent = de
+        ? "Die Warteliste öffnet in Kürze."
+        : "The waiting list opens shortly.";
+      form.parentNode.replaceChild(hint, form);
+      return;
+    }
+
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var btn = form.querySelector("button");
+      btn.disabled = true;
+      fetch(form.action, {
+        method: "POST",
+        body: new FormData(form),
+        headers: { Accept: "application/json" }
+      }).then(function (r) {
+        var de = root.getAttribute("data-lang") === "de";
+        if (r.ok) {
+          form.style.display = "none";
+          note.textContent = de
+            ? "Steht auf der Liste. Du hörst zum Start von mir."
+            : "You're on the list. I'll write once, at launch.";
+        } else {
+          btn.disabled = false;
+          note.textContent = de
+            ? "Hat nicht geklappt. Schreib mir einfach an support@codecraftcom.de."
+            : "That didn't work. Just email support@codecraftcom.de.";
+        }
+      }).catch(function () {
+        btn.disabled = false;
+        note.textContent = root.getAttribute("data-lang") === "de"
+          ? "Keine Verbindung. Versuch es später noch einmal."
+          : "No connection. Please try again later.";
       });
     });
-    function apply(code) {
-      document.documentElement.setAttribute('lang', code);
-      document.querySelectorAll('.lang-switch button').forEach(function (b) {
-        b.classList.toggle('active', b.dataset.lang === code);
-      });
-    }
-  })();
+  }
+  wire("waitlist", "formnote");
+  wire("waitlist2", "formnote2");
+})();
 </script>
-
 </body>
 </html>
